@@ -40,6 +40,12 @@ extends:
 
     stages:
     - stage: BuildAndTest
+      templateContext:
+        sdl:
+          codeql:
+            runSourceLanguagesInSourceAnalysis: true
+            buildIdentifier: java_additions_official
+            excludePathPatterns: '/extract,/azure-maven-archetypes,/azure-maven-plugins,/azure-functions-java-library'
 
       jobs:
       - template: /eng/ci/templates/official/jobs/build-and-test.yml@self
