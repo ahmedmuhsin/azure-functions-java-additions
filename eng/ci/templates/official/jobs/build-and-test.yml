@@ -1,3 +1,9 @@
+parameters:
+  - name: runEndToEndTests
+    type: boolean
+    default: true
+    displayName: "Run end-to-end tests"
+
 jobs:
   - job: "Build_And_Test_Java_Library_Windows"
 
@@ -37,6 +43,7 @@ jobs:
         mvn clean package `-Dmaven`.javadoc`.skip=true `-Dmaven`.test`.skip `-Dorg`.slf4j`.simpleLogger`.log`.org`.apache`.maven`.cli`.transfer`.Slf4jMavenTransferListener=warn `-B
         Copy-Item "confluent_cloud_cacert.pem" ".\target\azure-functions\azure-functions-java-endtoendtests"
       displayName: 'Package Java for E2E'
+      condition: eq('${{ parameters.runEndToEndTests }}', true)
 
     - task: DotNetCoreCLI@2
       retryCountOnTaskFailure: 3
@@ -66,4 +73,5 @@ jobs:
         ApplicationInsightAPPID: $(ApplicationInsightAPPID)
         ApplicationInsightAgentVersion: $(ApplicationInsightAgentVersion)
       displayName: 'Build & Run tests for java 8'
+      condition: eq('${{ parameters.runEndToEndTests }}', true)
     
