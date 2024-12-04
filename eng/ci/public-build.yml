@@ -32,16 +32,14 @@ extends:
       image: 1es-windows-2022
       os: windows
 
-    sdl:
-      codeql:
-         compiled:
-           enabled: true
-         runSourceLanguagesInSourceAnalysis: true
-         buildIdentifier: java_additions_public
-         excludePathPatterns: '/extract,/azure-maven-archetypes,/azure-maven-plugins,/azure-functions-java-library'
-
     stages:
     - stage: Build
+      templateContext:
+        sdl:
+          codeql:
+            runSourceLanguagesInSourceAnalysis: true
+            buildIdentifier: java_additions_public
+            excludePathPatterns: '/extract,/azure-maven-archetypes,/azure-maven-plugins,/azure-functions-java-library'
 
       jobs:
       - template: /eng/ci/templates/jobs/build.yml@self
