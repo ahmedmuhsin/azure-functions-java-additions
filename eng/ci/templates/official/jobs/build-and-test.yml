@@ -39,7 +39,7 @@ jobs:
         versionSpec: '8'
         jdkArchitectureOption: 'x64'
         jdkSourceOption: 'PreInstalled'
-      condition: eq('${{ parameters.runEndToEndTests }}', true)
+      condition: eq(${{ parameters.runEndToEndTests }}, true)
 
     - pwsh: |
         $currDir =  Get-Location
@@ -50,13 +50,13 @@ jobs:
         mvn clean package `-Dmaven`.javadoc`.skip=true `-Dmaven`.test`.skip `-Dorg`.slf4j`.simpleLogger`.log`.org`.apache`.maven`.cli`.transfer`.Slf4jMavenTransferListener=warn `-B
         Copy-Item "confluent_cloud_cacert.pem" ".\target\azure-functions\azure-functions-java-endtoendtests"
       displayName: 'Package Java for E2E'
-      condition: eq('${{ parameters.runEndToEndTests }}', true)
+      condition: eq(${{ parameters.runEndToEndTests }}, true)
 
     - bash: |
         docker compose -f azure-functions-java-worker/emulatedtests/utils/docker-compose.yml pull
         docker compose -f azure-functions-java-worker/emulatedtests/utils/docker-compose.yml up -d
       displayName: 'Install Azurite and Start Emulators'
-      condition: eq('${{ parameters.runEndToEndTests }}', true)
+      condition: eq(${{ parameters.runEndToEndTests }}, true)
 
     - task: DotNetCoreCLI@2
       retryCountOnTaskFailure: 3
@@ -68,5 +68,5 @@ jobs:
         AzureWebJobsStorage: "UseDevelopmentStorage=true"
         JAVA_HOME: $(JAVA_HOME_8_X64)
       displayName: 'Build & Run tests for java 8'
-      condition: eq('${{ parameters.runEndToEndTests }}', true)
+      condition: eq(${{ parameters.runEndToEndTests }}, true)
     

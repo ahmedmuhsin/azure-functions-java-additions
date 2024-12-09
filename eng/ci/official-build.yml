@@ -57,4 +57,4 @@ extends:
       jobs:
       - template: /eng/ci/templates/official/jobs/build-and-test.yml@self
         parameters:
-          runEndToEndTests: ${{ and(ne(variables['Build.Reason'], 'Schedule'), eq('${{ parameters.runEndToEndTests }}', true)) }}
+          runEndToEndTests: ${{ and(ne(variables['Build.Reason'], 'Schedule'), parameters.runEndToEndTests) }}
