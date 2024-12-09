@@ -35,7 +35,12 @@ resources:
 variables:
   - template: ci/variables/build.yml@eng
   - template: ci/variables/cfs.yml@eng
-
+  - name: codeql.language
+    value: java,powershell
+  - name: codeql.buildIdentifier
+    value: java_additions_official
+  - name: codeql.excludePathPatterns
+    value: '/extract,/azure-maven-archetypes,/azure-maven-plugins,/azure-functions-java-library,/azure-functions-java-worker'
 
 extends:
   template: v1/1ES.Official.PipelineTemplate.yml@1es
@@ -47,12 +52,6 @@ extends:
 
     stages:
     - stage: BuildAndTest
-      templateContext:
-        sdl:
-          codeql:
-            runSourceLanguagesInSourceAnalysis: true
-            buildIdentifier: java_additions_official
-            excludePathPatterns: '/extract,/azure-maven-archetypes,/azure-maven-plugins,/azure-functions-java-library'
 
       jobs:
       - template: /eng/ci/templates/official/jobs/build-and-test.yml@self
