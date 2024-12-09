@@ -34,13 +34,6 @@ jobs:
     - pwsh: '& .\build.ps1'
       displayName: 'Build project with java core library'
 
-    - task: JavaToolInstaller@1
-      inputs:
-        versionSpec: '8'
-        jdkArchitectureOption: 'x64'
-        jdkSourceOption: 'PreInstalled'
-      condition: eq(${{ parameters.runEndToEndTests }}, true)
-
     - pwsh: |
         $currDir =  Get-Location
         $Env:Path = $Env:Path+";$currDir\Azure.Functions.Cli"
