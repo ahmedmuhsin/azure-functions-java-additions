@@ -53,9 +53,10 @@ jobs:
       condition: eq(${{ parameters.runEndToEndTests }}, true)
 
     - bash: |
-        docker compose -f azure-functions-java-worker/emulatedtests/utils/docker-compose.yml pull
-        docker compose -f azure-functions-java-worker/emulatedtests/utils/docker-compose.yml up -d
-      displayName: 'Install Azurite and Start Emulators'
+        npm install -g azurite
+        mkdir azurite
+        azurite --silent --location azurite --debug azurite\debug.log &
+      displayName: 'Install and Run Azurite'
       condition: eq(${{ parameters.runEndToEndTests }}, true)
 
     - task: DotNetCoreCLI@2
