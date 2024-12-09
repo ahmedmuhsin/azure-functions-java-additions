@@ -21,8 +21,16 @@ jobs:
         checkLatest: true
       displayName: 'Install NuGet Tool'
 
+    - task: JavaToolInstaller@1
+      inputs:
+        versionSpec: '8'
+        jdkArchitectureOption: 'x64'
+        jdkSourceOption: 'PreInstalled'
+
     - pwsh: |
         Write-Host "Java_HOME: $JAVA_HOME"
+        Write-Host "Java_HOME: $JAVA_HOME_8_X64"
+        java --version
         Get-Command mvn
       displayName: 'Check Maven is installed'
 
@@ -44,34 +52,20 @@ jobs:
         Copy-Item "confluent_cloud_cacert.pem" ".\target\azure-functions\azure-functions-java-endtoendtests"
       displayName: 'Package Java for E2E'
       condition: eq('${{ parameters.runEndToEndTests }}', true)
-
+    - bash: |
+        docker compose -f azure-functions-java-worker/emulatedtests/utils/docker-compose.yml pull
+        docker compose -f azure-functions-java-worker/emulatedtests/utils/docker-compose.yml up -d
+      displayName: 'Install Azurite and Start Emulators'
+      condition: eq('${{ parameters.runEndToEndTests }}', true)
     - task: DotNetCoreCLI@2
       retryCountOnTaskFailure: 3
       inputs:
         command: 'test'
         projects: |
-          azure-functions-java-worker\endtoendtests\Azure.Functions.Java.Tests.E2E\Azure.Functions.Java.Tests.E2E\Azure.Functions.Java.Tests.E2E.csproj
+          azure-functions-java-worker/emulatedtests/Azure.Functions.Java.Tests.E2E/Azure.Functions.Java.Tests.E2E/Azure.Functions.Java.Tests.E2E.csproj
       env:
-        AzureWebJobsStorage: $(AzureWebJobsStorage)
-        AzureWebJobsCosmosDBConnectionString: $(AzureWebJobsCosmosDBConnectionString)
-        AzureWebJobsSqlConnectionString: $(AzureWebJobsSqlConnectionString)
-        AzureWebJobsServiceBus: $(AzureWebJobsServiceBus)
-        AzureWebJobsEventHubReceiver: $(AzureWebJobsEventHubReceiver)
-        AzureWebJobsEventHubSender_2: $(AzureWebJobsEventHubSender_2)
-        AzureWebJobsEventHubSender: $(AzureWebJobsEventHubSender)
-        AzureWebJobsEventHubPath: $(AzureWebJobsEventHubPath)
-        SBTopicName: $(SBTopicName)
-        SBTopicSubName: $(SBTopicSubName)
-        CosmosDBDatabaseName: $(CosmosDBDatabaseName)
-        SBQueueName: $(SBQueueName)
-        BrokerList": $(BrokerList)
-        ConfluentCloudUsername: $(ConfluentCloudUsername)
-        ConfluentCloudPassword: $(ConfluentCloudPassword)
-        AzureWebJobsEventGridOutputBindingTopicUriString: $(AzureWebJobsEventGridOutputBindingTopicUriString)
-        AzureWebJobsEventGridOutputBindingTopicKeyString: $(AzureWebJobsEventGridOutputBindingTopicKeyString)
-        ApplicationInsightAPIKey: $(ApplicationInsightAPIKey)
-        ApplicationInsightAPPID: $(ApplicationInsightAPPID)
-        ApplicationInsightAgentVersion: $(ApplicationInsightAgentVersion)
+        AzureWebJobsStorage: "UseDevelopmentStorage=true"
+        JAVA_HOME: $(JAVA_HOME_8_X64)
       displayName: 'Build & Run tests for java 8'
       condition: eq('${{ parameters.runEndToEndTests }}', true)
     
