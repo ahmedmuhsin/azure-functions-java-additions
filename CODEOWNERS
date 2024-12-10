@@ -7,4 +7,4 @@
 #   https://help.github.com/articles/about-codeowners/  
 
 # Default owners for repo
-*	@Azure/azure-functions-java-worker-admins
+* @azure/azure-functions-extensions-bundle-admins
