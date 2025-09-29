@@ -20,7 +20,7 @@ public class OpenTelemetryInvocationMiddleware implements Middleware {
      * Constructs the middleware and initializes OpenTelemetry.
      */
     public OpenTelemetryInvocationMiddleware() {
-        FunctionsOpenTelemetry.initialize();
+        //FunctionsOpenTelemetry.initialize();
     }
 
     /**
@@ -29,7 +29,7 @@ public class OpenTelemetryInvocationMiddleware implements Middleware {
 
     @Override
     public void invoke(MiddlewareContext context, MiddlewareChain chain) throws Exception {
-        String spanName = "Invoked";//context.getFunctionName();
+        String spanName = "Invoke";//context.getFunctionName();
         
         // Configure logger for this invocation
         FunctionsOpenTelemetry.setLogger(context.getLogger());
@@ -46,10 +46,10 @@ public class OpenTelemetryInvocationMiddleware implements Middleware {
         try (Scope baggageScope = baggage.makeCurrent()) {
             // Now create the span - BaggageSpanProcessor will automatically add baggage as attributes
             Span invocationSpan = FunctionsOpenTelemetry.startSpan(spanName, context.getTraceContext(), SpanKind.INTERNAL);
-                invocationSpan.setAttribute("test.explicit1", "this-should-work");
+            invocationSpan.setAttribute("test.explicit1", "this-should-work");
             try (Scope spanScope = invocationSpan.makeCurrent()) {
                 // No need to manually set attributes - they're already added by BaggageSpanProcessor!
-                invocationSpan.setAttribute("faas.invocation_id", context.getInvocationId());
+                invocationSpan.setAttribute("faas.invocation_id", "test_" + context.getInvocationId());
                 invocationSpan.setAttribute("faas.name.custom", context.getFunctionName());
                 invocationSpan.setAttribute("test.explicit2", "this-should-work");
                 // Continue with the middleware chain - all child spans will also get the attributes automatically
